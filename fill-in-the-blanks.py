@@ -48,6 +48,7 @@ def QuestionAndAnswer(question, answer, guess_num):
     # will use the item_map below to translate item code to English language. we use it to tell player which blank they are on
     item_map = {1: 'first', 2:'second', 3:'third', 4:'fourth'}
     item = 1
+    count = 0
     for word in question[1].split():
         if "____" in word:
             # loop on the same blank until the player enter the correct answer, I give the player 3 guesses, if not correct after 3 guesses, prompt the answer
@@ -63,18 +64,17 @@ def QuestionAndAnswer(question, answer, guess_num):
                     item += 1
                     guesses = 0
                     break
-            print guesses
-            print guess_num
             if guesses == guess_num:
                 print "Sorry, you guessed " + str(guess_num) + " times wrong. You lost this game! Please restart this game."
-                QuestionAndAnswer(question, answer, guess_num)
+        count = 1
+        break
                 # codes below: explore another way of playing this game
                 # print "move to next blank"
                 # item += 1
                 # continue
-            else:
-                print "Here!"
+    if count == 1:
+        QuestionAndAnswer(question, answer, guess_num)
+    else:
+        return "Congratulation! You passed Level " + question[0] + " of this game!"
 
-    return "Congratulation! You passed Level " + question[0] + " of this game!"
-
-print PlayGame()
+PlayGame()
