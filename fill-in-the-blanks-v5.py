@@ -4,26 +4,29 @@
 # Use a dictionary to store all the background data for the game
 quiz = {
     'Easy': {
-        'phrase': "In year ____, ____ program sent 3 astronauts to the moon. "
-        "____ is the first person to walk on the moon. "
+        'phrase': "In year __1__, __2__ program sent 3 astronauts to the moon. "
+        "__3__ is the first person to walk on the moon. "
         "This unprecedented manned Moon landing mission beat Soviet Union that "
-        "sent first human to journey into outer space in year ____.",
-        'answers': ['1969', 'Apollo', 'Neil Armstrong', '1961']
+        "sent first human to journey into outer space in year __4__.",
+        'answers': ['1969,', 'Apollo', 'Neil Armstrong', '1961.']
     },
     'Medium': {
-        'phrase': "In year ____, Soviets launched the first artificial "
-        "satellite, ____, into space. In year ____, the first U.S. "
-        "satellite, ____, went into orbit.",
-        'answers': ['1957', 'Sputnik 1', '1958', 'Explorer 1']
+        'phrase': "In year __1__, Soviets launched the first artificial "
+        "satellite, __2__, into space. In year __3__, the first U.S. "
+        "satellite, __4__, went into orbit.",
+        'answers': ['1957,', 'Sputnik 1,', '1958,', 'Explorer 1,']
     },
     'Hard': {
-        'phrase': "In year ____, Chinese astronaut, ____, became the first "
-        "person sent into space by Chinese space program. In year ____, "
-        "Chinese astronaut, ____, became the first Chinese citizen to carry "
+        'phrase': "In year __1__, Chinese astronaut, __2__, became the first "
+        "person sent into space by Chinese space program. In year __3__, "
+        "Chinese astronaut, __4__, became the first Chinese citizen to carry "
         "out a spacewalk in the mission of Shenzhou 7.",
-        'answers': ['2003', 'Yang Liwei', '2008', 'Zhai Zhigang']
+        'answers': ['2003,', 'Yang Liwei,', '2008,', 'Zhai Zhigang,']
     }
 }
+
+# a list of string of blanks
+blanks = ['__1__', '__2__', '__3__', '__4__']
 
 # map index to English language, so users know which blank she is working on
 index_map = {0: 'first', 1:'second', 2:'third', 3:'fourth'}
@@ -85,6 +88,50 @@ def max_guess_allowed():
             break
     return guess_num
 
+def check_if_blank(word, blanks):
+    """
+    This function checks if the word is a blank defined in the list blanks
+
+    Inputs:
+        word: any string. In this function it is expected to be one of the
+            splitted word from the quesiton phrase
+        blanks: the list of blanks
+
+    Returns:
+        returns True if word is a defined blank
+    """
+    for each in blanks:
+        if each in word:
+            return True
+
+def print_answer(level, replaced, word, index):
+    """
+    This function prints the congratulation message at first. Then it replaces
+    the blank with the answer and print the answer. At last, it increases the
+    index by one so the loops will move to next blank
+
+    Inputs:
+        level: a value returned by choose_level(), the difficulty level.
+            values are 'Easy', 'Medium', or 'Hard'
+        replaced: a saved phrase where blanks are replaced with answers, start
+            from the original question phrase
+        word: in this function it is really one of the blanks
+        index: the yet updated index, which will be updated in this function
+
+    Returns:
+        index: udpated index as the user fills the blank correctly
+        replaced: update the replaced phrase to keep the answers filled in
+                  earlier
+    """
+    print "You're correct!"
+    replaced = replaced.replace(word, quiz[level]['answers'][index])
+    #print replaced
+    print replaced
+    # move to next blank, update the index
+    index += 1
+    return index, replaced
+
+
 def win_game(level, guess_num):
     """
     Print the question and ask the user to user input the answer. The user
@@ -107,19 +154,20 @@ def win_game(level, guess_num):
     print quiz[level]['phrase']
     # Set the index, start from first blank
     index = 0
+    # Set the initial question phrase whose blanks will be replaced
+    replaced = quiz[level]['phrase']
+    # start checking each word in the question phrase
     for word in quiz[level]['phrase'].split():
-        if "____" in word:
+        if check_if_blank(word, blanks):
             guesses = 0
             while guesses < guess_num:
                 response = raw_input("Please fill in the " + index_map[index] +
                                      " blank: ")
-                if response != quiz[level]['answers'][index]:
+                if response not in quiz[level]['answers'][index]:
                     guesses += 1
                     print "Sorry, wrong answer. Please try again."
                 else:
-                    print "You're correct!"
-                    # move to next blank, update the item order and reset guesses
-                    index += 1
+                    index, replaced = print_answer(level, replaced, word, index)
                     # reset the guess number
                     guesses = 0
                     break
